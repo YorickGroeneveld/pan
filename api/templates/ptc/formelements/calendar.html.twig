@@ -1,0 +1,198 @@
+<label class="input__label" for="{{ property.id }}">{{ property.title }}</label>
+{%  if property.description %}<span class="input__hint" id="{{ property.id }}_name">{{ property.description }}</span>{% endif %}
+<div></div>
+<style>
+    .activeBtn{
+        background-color: #f9e11e !important;
+        color: black;
+        border: 2px solid black !important;
+    }
+</style>
+<table class="table table--small-font">
+    <thead>
+        <tr>
+            <th><select id="weekSelect" onchange="weekSelector(this)"  class="calendarSelect">
+                </select></th>
+            <th style="text-align: center">Ma<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Di<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Woe<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Do<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Vrij<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Zat<br><p style="font-weight: 100" class="week"></p></th>
+            <th style="text-align: center">Zon<br><p style="font-weight: 100" class="week"></p></th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr style="height: 60px;" class="days">
+        <th>09:00 - 10:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>10:00 - 11:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>11:00 - 12:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>12:00 - 13:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>13:00 - 14:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>14:00 - 15:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>15:00 - 16:00</th>
+    </tr>
+    <tr style="height: 60px;" class="days">
+        <th>16:00 - 17:00</th>
+    </tr>
+    </tbody>
+</table>
+
+<div id="testData" style="margin-top: 40px;">
+
+</div>
+
+
+<input id="calendarValue"  type="hidden" name="request[properties][{{ property.name }}]"
+value="">
+<script>
+
+    Date.prototype.getWeek = function (dowOffset) {
+
+        dowOffset = typeof(dowOffset) == 'int' ? dowOffset : 0;
+        let newYear = new Date(this.getFullYear(),0,1);
+        let day = newYear.getDay() - dowOffset;
+        day = (day >= 0 ? day : day + 7);
+        let dayNum = Math.floor((this.getTime() - newYear.getTime() -
+            (this.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
+        let weekNum;
+        if(day < 4) {
+            weekNum = Math.floor((dayNum+day-1)/7) + 1;
+            if(weekNum > 52) {
+                let nYear = new Date(this.getFullYear() + 1,0,1);
+                let nDay = nYear.getDay() - dowOffset;
+                weekNum = nDay < 4 ? 1 : 53;
+            }
+        }
+        else {
+            weekNum = Math.floor((dayNum+day-1)/7);
+        }
+        return weekNum;
+    };
+
+
+    function getDateOfWeek(w, y) {
+        let date = new Date(y, 0, (1 + (w - 1) * 7));
+        date.setDate(date.getDate() + (1 - date.getDay()));
+        return date
+    }
+
+
+    //test data
+    let test = new Date();
+    test.setDate(test.getDate()+2);
+
+
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentWeek = today.getWeek();
+    let select = document.getElementById('weekSelect');
+    for(let i = currentWeek; i <= currentWeek + 52; i ++){
+        if(i > 52){
+            let counter = i - 52;
+            let nextYear = currentYear + 1;
+            let option = document.createElement('option');
+            option.id = i;
+            option.value = counter + '-' + nextYear;
+            option.innerHTML = 'week: ' + counter + ' - ' + nextYear ;
+            select.appendChild(option);
+        }else {
+            let option = document.createElement('option');
+            option.id = i;
+            option.value = i + '-' + currentYear;
+            option.innerHTML = 'week: ' + i + ' - ' +  currentYear;
+            select.appendChild(option);
+        }
+
+    }
+
+
+    let days = document.getElementsByClassName('days');
+    for(let i = 0; i < days.length; i++){
+        for(let j = 0; j < 7; j++){
+
+            let td = document.createElement('td');
+            td.setAttribute('style', 'height: 40px; padding: 0;');
+
+            let button = document.createElement('button');
+            button.setAttribute('style', 'width: 100%; display: block; height: 100%; background-color: white; border: 1px solid lightgray;');
+            button.type = 'button';
+            button.value = days[i].children[0].innerHTML;
+
+            button.className = 'btnStyle button-'+j.toString();
+            button.addEventListener('click', function(){
+                selectDate(button.value, button.name, button);
+            });
+            td.appendChild(button);
+            days[i].appendChild(td);
+        }
+    }
+
+    function weekSelector(week) {
+        const months = ['Jan', 'Feb', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        let arr = week.value.split('-');
+        let date = getDateOfWeek(arr[0], arr[1]);
+        let weeks = document.getElementsByClassName('week');
+        for(let i = 0; i < weeks.length; i ++){
+            let buttons = document.getElementsByClassName('button-'+i.toString());
+            for(let j = 0; j < buttons.length; j++){
+                buttons[j].name = date.getDate() + ' ' + months[date.getMonth()];
+                buttons[j].innerText = 'kies';
+                buttons[j].setAttribute('style', 'width: 100%; display: block; height: 100%; background-color: #148839; border: 1px solid lightgray;');
+                if(date.getDay() === 0){
+                    buttons[j].setAttribute('style', 'width: 100%; display: block; height: 100%; background-color: lightgrey; border: 1px solid lightgray;');
+                    buttons[j].innerText = '';
+                    buttons[j].setAttribute('disabled', 'disabled');
+                }
+                if(date.getDay() === 6){
+                    buttons[j].setAttribute('style', 'width: 100%; display: block; height: 100%; background-color: lightgrey; border: 1px solid lightgray;');
+                    buttons[j].innerText = '';
+                    buttons[j].setAttribute('disabled', 'disabled');
+                }
+            }
+            weeks[i].innerHTML= date.getDate() + ' ' + months[date.getMonth()];
+            date.setDate(date.getDate() + 1);
+        }
+    }
+
+    function selectDate(timeFrame, date, button){
+        removeClass('activeBtn');
+        button.classList.add('activeBtn');
+        if(date !== ''){
+            let testData = document.getElementById('testData');
+            let time = timeFrame.split('-');
+            let hiddenInput = document.getElementById('calendarValue');
+            hiddenInput.value = date + ' ' + time[0] + '-' + time[1];
+            testData.innerText = 'Gekozen datum: ' + date + ' tussen: ' + time[0] + ' - ' + time[1];
+        }
+    }
+
+    function firstStart() {
+        let info = document.getElementById('weekSelect');
+
+        weekSelector(info);
+    }
+
+    function removeClass(className) {
+        let buttons = document.getElementsByClassName('btnStyle');
+        for(let i = 0; i < buttons.length; i++){
+            buttons[i].classList.remove(className);
+        }
+    }
+
+    firstStart();
+
+</script>

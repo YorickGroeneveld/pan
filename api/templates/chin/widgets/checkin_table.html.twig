@@ -1,0 +1,62 @@
+<div class="content-background" >
+    <div class="content">
+        <h2>{{ 'check-ins'|capitalize }}</h2>
+        {% if checkins is defined and checkins is not empty %}
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">{{ 'organization'|trans|capitalize }}</th>
+                <th scope="col">{{ 'place'|trans|capitalize }}</th>
+                <th scope="col">{{ 'check-in date'|trans|capitalize }}</th>
+                <th scope="col">{{ 'deletion date'|trans|capitalize }}</th>
+
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set counter = 0 %}
+            {% for checkin in checkins %}
+            <tr>
+                <td>{{ commonground_resource(checkin.node.organization).name|capitalize }}</td>
+                <td>{{ commonground_resource(checkin.node.place).name|capitalize }}</td>
+                <td>{{ checkin.dateCreated|date("H:i d-m-Y", "Europe/Amsterdam") }}</td>
+                <td>{{ checkin.dateToDestroy|date("H:i d-m-Y", "Europe/Amsterdam") }}</td>
+                <td> <a data-toggle="modal" data-target="#checkin-{{ checkin.id }}" onclick="openModal{{ counter }}()">{{ 'view'|trans|capitalize }}</a></td>
+            </tr>
+                {% set counter = counter + 1 %}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <aside class="hint">
+                <h2 class="hint__title">{{ 'no checkins available'|trans|capitalize }}</h2>
+            </aside>
+        {% endif %}
+    </div><!-- /.content -->
+</div><!-- /.content-background -->
+
+{% set counter = 0 %}
+{% for checkin in checkins %}
+    {% include 'chin/modals/checkin_modal.html.twig' with { 'item':checkin } %}
+    <script>
+        let myModal{{ counter }};
+        // Load modal component
+        System.import('/uno/components/modal/modal.js').then(function (module) {
+            myModal{{ counter }} = new module.Modal(document.getElementById('checkin-{{ checkin.id }}'));
+        });
+
+        // Called when the user clicks the button
+        function openModal{{ counter }}() {
+            myModal{{ counter }}.open();
+        }
+    </script>
+    {% set counter = counter + 1 %}
+{% endfor %}
+
+{% if app.request.query.get('showCheckin') %}
+<script>
+    $(window).on('load',function(){
+        openModal0();
+    });
+</script>
+{% endif %}

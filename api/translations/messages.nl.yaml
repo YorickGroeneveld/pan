@@ -1,0 +1,16 @@
+# translations/messages.nl.yaml
+requested: aangevraagd
+granted: ingestemd
+submitted: ingediend
+retracted: ingetrokken
+declined: afgewezen
+incomplete: incompleet
+complete: compleet
+processed: verwerkt
+cancelled: geannuleerd
+reference: kenmerk
+name: naam
+created: aangemaakt
+modified: aangepast
+status: status
+resume: hervat

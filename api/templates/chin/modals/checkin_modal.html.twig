@@ -1,0 +1,32 @@
+<div class="modal modal--backdrop" role="dialog" id="checkin-{{ item.id }}" tabindex="-1" aria-describedby="modal-description3">
+    <section class="modal__content" role="document" style="background-color: #39870c">
+        <div class="modal__body" tabindex="0" lang="en-US">
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-xs-6">
+                </div>
+                <div class="col-xs-6">
+                    <button style="float: right; color: white;" class="modal__close-button">
+                        <i class="icon icon-cross" style="color: white"></i>
+                        {{ 'close'|trans|capitalize }}
+                    </button>
+                </div>
+            </div>
+            <div class="flex-center" style="height: 100%">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span style="font-size: 20rem; color: white;" class="icon icon-check" title=""></span>
+                    </div>
+                    <div class="col-xs-12">
+                        <h3 style="color: white">Ingecheckt!</h3>
+                    </div>
+                    <div class="col-xs-12">
+                        <h3 style="color: white">{{ commonground_resource(item.node.place).name }}</h3>
+                    </div>
+                    <div class="col-xs-12">
+                        <h3 style="color: white">{{ item.dateCreated|date("H:i d-m-Y", "Europe/Amsterdam") }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
